@@ -17,7 +17,7 @@
    - Download and install VirtualBox on your laptop.
 
 2. **Download Ubuntu Server ISO**:
-   - Use the official Ubuntu website to download the ISO for Ubuntu Server 24.04.1 LTS.
+   - Download the ISO for Ubuntu Server 24.04.1 LTS using the official Ubuntu website.
 
 3. **Set Up Virtual Machine**:
    - Create a virtual machine in VirtualBox and allocate appropriate resources (e.g., 2 CPUs, 4GB RAM).
@@ -116,6 +116,8 @@
    ```bash
    kubectl get namespace
    ```
+   ![image](https://github.com/user-attachments/assets/ee210189-1f6e-410f-a51f-50765adb14f8)
+
 
 ---
 
