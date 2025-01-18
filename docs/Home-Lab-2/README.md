@@ -117,7 +117,7 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0` and `prometheus-server
    apiVersion: storage.k8s.io/v1
    kind: StorageClass
    metadata:
-     name: gp2
+     name: ebs-sc
    provisioner: ebs.csi.aws.com
    parameters:
      type: gp2
@@ -142,16 +142,27 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0` and `prometheus-server
    apiVersion: v1
    kind: PersistentVolume
    metadata:
-     name: prometheus-server-pv
+     name: prometheus-server
    spec:
      capacity:
        storage: 10Gi
+     volumeMode: Filesystem
      accessModes:
        - ReadWriteOnce
+     persistentVolumeReclaimPolicy: Retain
      storageClassName: gp2
-     awsElasticBlockStore:
-       volumeID: <your-ebs-volume-id>
-       fsType: ext4
+     csi:
+        driver: ebs.csi.aws.com
+        volumeHandle: <your-ebs-volume-id>
+        fsType: ext4
+      nodeAffinity:
+        required:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: topology.kubernetes.io/zone
+                  operator: In
+                  values:
+                    - eu-west-1a
    ```
    Apply the PV:
    ```bash
