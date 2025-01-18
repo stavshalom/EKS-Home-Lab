@@ -7,10 +7,36 @@ Before starting, it's important to define the monitoring goals:
 - Analyze the cluster's workload.
 - Manage logs for troubleshooting.
 
+## Lessons Learned and Troubleshooting Insights
+
+### Key Takeaways
+1. **Hands-on Practice:** This lab deepened my understanding of Kubernetes resource management, especially Persistent Volume Claims (PVCs) and Persistent Volumes (PVs).
+2. **AWS Integration:** Installing and managing AWS EBS CSI Driver provided valuable insights into how cloud-native storage works in Kubernetes environments.
+3. **Efficient Resource Allocation:** Small instances like `t2.micro` highlighted the importance of balancing resource constraints with workload demands.
+
+### Troubleshooting Highlights
+1. **PVC Binding Issues:**
+   - Problem: PVCs were stuck in `Pending` due to missing or mismatched StorageClass definitions.
+   - Solution: Created and applied appropriate `StorageClass` configurations, ensuring they matched the PV and PVC requirements.
+
+2. **Pod Scheduling Problems:**
+   - Problem: Prometheus Pods were in `Pending` due to insufficient node resources.
+   - Solution: Adjusted resource requests and limits in the Helm Chart values, optimizing them for the cluster's capacity.
+
+3. **AWS Permissions:**
+   - Problem: The EBS CSI Driver required additional IAM permissions to function correctly.
+   - Solution: Attached is the necessary IAM policy (`AmazonEKS_EBS_CSI_Driver`) for the Node Group's IAM role.
+
+4. **Grafana Access Challenges:**
+   - Problem: Initial difficulties accessing Grafana dashboards.
+   - Solution: Resolved by performing Port Forwarding and retrieving the admin credentials using Kubernetes secrets.
+
+---
+
 ## Learning Resources
 
 ### Prometheus Basics:
-A quick YouTube video to understand Prometheus:
+Here is a quick YouTube video to understand Prometheus:
 [https://www.youtube.com/watch?v=h4Sl21AKiDg&t=31s](https://www.youtube.com/watch?v=h4Sl21AKiDg&t=31s)
 
 ### Helm Basics in Kubernetes:
