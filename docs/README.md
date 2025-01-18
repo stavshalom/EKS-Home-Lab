@@ -90,7 +90,7 @@
 ## 7. Creating an EKS Cluster
 1. **Run the Cluster Creation Command**:
    ```bash
-   eksctl create cluster --name eks-stav --region eu-west-1 --nodes 2 --node-type t2.micro --managed
+   eksctl create cluster --name eks-stav --region eu-west-1 --nodes 4 --node-type t2.micro --managed
    ```
    - **Cluster Name**: `eks-stav`  
    - **Region**: `eu-west-1` (Ireland)  
