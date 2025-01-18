@@ -116,7 +116,8 @@
    ```bash
    kubectl get namespace
    ```
-   ![image](https://github.com/user-attachments/assets/ee210189-1f6e-410f-a51f-50765adb14f8)
+![image](https://github.com/user-attachments/assets/497ba689-4cc2-409b-b330-7baa434c0571)
+
 
 
 ---
