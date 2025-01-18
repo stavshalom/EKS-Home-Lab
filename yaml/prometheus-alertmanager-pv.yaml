@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: gp2
   awsElasticBlockStore:
-    volumeID: vol-070112cd85c32802d
+    volumeID: <your-ebs-volume-id>
     fsType: ext4
   nodeAffinity:
     required:
