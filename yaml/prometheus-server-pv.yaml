@@ -12,7 +12,7 @@ spec:
   storageClassName: gp2
   csi:
     driver: ebs.csi.aws.com
-    volumeHandle: vol-07269eabc51f99a39
+    volumeHandle: <your-ebs-volume-id>
     fsType: ext4
   nodeAffinity:
     required:
