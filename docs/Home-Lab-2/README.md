@@ -1,66 +1,82 @@
 # Steps to Complete the EKS Monitoring Lab
 
-## Understanding the Objectives
+---
 
-Before starting, it's important to define the monitoring goals:
-- Track the performance of Pods and Nodes (CPU, memory, storage, etc.).
-- Analyze the cluster's workload.
-- Manage logs for troubleshooting.
+## Table of Contents
+1. [Understanding the Objectives](#1-understanding-the-objectives)
+2. [Lessons Learned and Troubleshooting Insights](#2-lessons-learned-and-troubleshooting-insights)
+   - [Key Takeaways](#key-takeaways)
+   - [Troubleshooting Highlights](#troubleshooting-highlights)
+3. [Learning Resources](#3-learning-resources)
+4. [Step 1: Creating a New EKS Cluster](#4-step-1-creating-a-new-eks-cluster)
+5. [Step 2: Installing Prometheus and Grafana](#5-step-2-installing-prometheus-and-grafana)
+   - [Installing Prometheus](#installing-prometheus)
+   - [Handling Pending Pods](#handling-pending-pods)
+   - [Installing the AWS EBS CSI Driver](#installing-the-aws-ebs-csi-driver)
+   - [Creating a StorageClass for the EBS CSI Driver](#creating-a-storageclass-for-the-ebs-csi-driver)
+   - [Resolving Pending Pods](#resolving-pending-pods)
+6. [Accessing Prometheus and Grafana](#6-accessing-prometheus-and-grafana)
+7. [Conclusion](#7-conclusion)
 
-## Lessons Learned and Troubleshooting Insights
+---
+
+## 1. Understanding the Objectives
+
+This lab focuses on building a robust monitoring system for an EKS cluster. The primary goals are:
+- **Performance Tracking**: Monitor Pods and Nodes for CPU, memory, and storage usage metrics.
+- **Workload Analysis**: Understand cluster behavior under different loads.
+- **Log Management**: Enable effective troubleshooting by centralizing and analyzing logs.
+
+---
+
+## 2. Lessons Learned and Troubleshooting Insights
 
 ### Key Takeaways
-1. **Hands-on Practice:** This lab deepened my understanding of Kubernetes resource management, especially Persistent Volume Claims (PVCs) and Persistent Volumes (PVs).
-2. **AWS Integration:** Installing and managing AWS EBS CSI Driver provided valuable insights into how cloud-native storage works in Kubernetes environments.
-3. **Efficient Resource Allocation:** Small instances like `t2.micro` highlighted the importance of balancing resource constraints with workload demands.
+1. **Hands-on Practice**: Gained practical experience in Kubernetes resource management, especially PVCs and PVs.
+2. **AWS Integration**: Learned how cloud-native storage solutions, like AWS EBS CSI Driver, integrate with Kubernetes.
+3. **Efficient Resource Allocation**: Understood the limitations of small instances like `t2.micro` and the importance of resource optimization.
 
 ### Troubleshooting Highlights
-1. **PVC Binding Issues:**
-   - Problem: PVCs were stuck in `Pending` due to missing or mismatched StorageClass definitions.
-   - Solution: Created and applied appropriate `StorageClass` configurations, ensuring they matched the PV and PVC requirements.
+1. **PVC Binding Issues**:
+   - **Problem**: PVCs remained in a `Pending` state due to missing or mismatched StorageClass definitions.
+   - **Solution**: Created and applied correct `StorageClass` configurations, ensuring compatibility with PVs.
 
-2. **Pod Scheduling Problems:**
-   - Problem: Prometheus Pods were in `Pending` due to insufficient node resources.
-   - Solution: Adjusted resource requests and limits in the Helm Chart values, optimizing them for the cluster's capacity.
+2. **Pod Scheduling Problems**:
+   - **Problem**: Prometheus Pods were stuck in `Pending` due to insufficient node resources.
+   - **Solution**: Adjusted resource requests and limits in Helm Chart values, optimizing them for the cluster's capacity.
 
-3. **AWS Permissions:**
-   - Problem: The EBS CSI Driver required additional IAM permissions to function correctly.
-   - Solution: Attached is the necessary IAM policy (`AmazonEKS_EBS_CSI_Driver`) for the Node Group's IAM role.
+3. **AWS Permissions**:
+   - **Problem**: EBS CSI Driver required additional IAM permissions.
+   - **Solution**: Attached the necessary IAM policy (`AmazonEKS_EBS_CSI_Driver`) to the Node Group's IAM role.
 
-4. **Grafana Access Challenges:**
-   - Problem: Initial difficulties accessing Grafana dashboards.
-   - Solution: Resolved by performing Port Forwarding and retrieving the admin credentials using Kubernetes secrets.
-
----
-
-## Learning Resources
-
-### Prometheus Basics:
-Here is a quick YouTube video to understand Prometheus:
-[https://www.youtube.com/watch?v=h4Sl21AKiDg&t=31s](https://www.youtube.com/watch?v=h4Sl21AKiDg&t=31s)
-
-### Helm Basics in Kubernetes:
-An explanatory video on using Helm:
-[https://www.youtube.com/watch?v=-ykwb1d0DXU](https://www.youtube.com/watch?v=-ykwb1d0DXU)
-
-### Grafana for Beginners:
-A playlist of 12 videos for beginners:
-[https://www.youtube.com/watch?v=TQur9GJHIIQ&list=PLDGkOdUX1Ujo27m6qiTPPCpFHVfyKq9jT](https://www.youtube.com/watch?v=TQur9GJHIIQ&list=PLDGkOdUX1Ujo27m6qiTPPCpFHVfyKq9jT)
+4. **Grafana Access Challenges**:
+   - **Problem**: Difficulty accessing Grafana dashboards initially.
+   - **Solution**: Resolved by performing Port Forwarding and retrieving admin credentials from Kubernetes secrets.
 
 ---
 
-## Step 1: Creating a New EKS Cluster
+## 3. Learning Resources
 
-Create a new EKS cluster with 3 nodes of type `t3.medium`:
+### Prometheus Basics
+[Quick YouTube Guide to Prometheus](https://www.youtube.com/watch?v=h4Sl21AKiDg&t=31s)
+
+### Helm Basics in Kubernetes
+[Using Helm for Kubernetes](https://www.youtube.com/watch?v=-ykwb1d0DXU)
+
+### Grafana for Beginners
+[Beginner's Playlist for Grafana](https://www.youtube.com/watch?v=TQur9GJHIIQ&list=PLDGkOdUX1Ujo27m6qiTPPCpFHVfyKq9jT)
+
+---
+
+## 4. Step 1: Creating a New EKS Cluster
+
+Create an EKS cluster with three `t3.medium` nodes:
 ```bash
 eksctl create cluster --name eks-stav --region eu-west-1 --nodes 3 --node-type t3.medium --managed
 ```
-
 ---
 
-## Step 2: Installing Prometheus and Grafana
-
-Prometheus and Grafana are the most common tools for Kubernetes monitoring.
+## 5. Step 2: Installing Prometheus and Grafana
 
 ### Installing Prometheus
 
@@ -68,8 +84,6 @@ Prometheus and Grafana are the most common tools for Kubernetes monitoring.
    ```bash
    curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
    ```
-   ![image](https://github.com/user-attachments/assets/66a415f6-4054-4fd2-9a17-87962126c4ca)
-
 
 2. **Add the Prometheus Community Repository**:
    ```bash
@@ -86,16 +100,16 @@ Prometheus and Grafana are the most common tools for Kubernetes monitoring.
    ```bash
    kubectl get pods -n monitoring
    ```
-   ![image](https://github.com/user-attachments/assets/f37a378f-51ba-44d8-bcfa-95df7b633021)
 
+![Prometheus Pods](https://github.com/user-attachments/assets/f37a378f-51ba-44d8-bcfa-95df7b633021)
 
 ---
 
 ### Handling Pending Pods
 
-Some Prometheus Pods, such as `prometheus-alertmanager-0` and `prometheus-server`, may enter a **`Pending`** state. This usually occurs due to issues with PersistentVolumeClaims (PVCs).
+Some Prometheus Pods, such as `prometheus-alertmanager-0`, may enter a **`Pending`** state due to PVC issues. Resolve these by ensuring proper PV and StorageClass configurations.
 
-#### Investigate PVC Issues
+#### Investigating PVC Issues
 1. **List Pending PVCs**:
    ```bash
    kubectl get pvc -n monitoring
@@ -104,11 +118,6 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0` and `prometheus-server
    ```bash
    kubectl describe pvc <pvc-name> -n monitoring
    ```
-3. **Check Available PersistentVolumes (PVs)**:
-   ```bash
-   kubectl get pv
-   ```
-   If no PVs are available, you will need to create them manually.
 
 ---
 
@@ -129,7 +138,7 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0` and `prometheus-server
    --set region=eu-west-1
    ```
 
-3. **Verify the Driver Installation**:
+3. **Verify the Installation**:
    ```bash
    kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-ebs-csi-driver
    ```
@@ -145,14 +154,13 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0` and `prometheus-server
    metadata:
      name: ebs-sc
    provisioner: ebs.csi.aws.com
-   parameters:
-     type: gp2
-     fsType: ext4
+     parameters:
+       type: gp2
+       fsType: ext4
    reclaimPolicy: Retain
    volumeBindingMode: WaitForFirstConsumer
    ```
-
-2. Apply the `StorageClass`:
+   Apply the `StorageClass`:
    ```bash
    kubectl apply -f ebs-storageclass.yaml
    ```
@@ -284,7 +292,9 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0` and `prometheus-server
 
 ---
 
-### Accessing Prometheus
+## 6. Accessing Prometheus and Grafana
+
+### Prometheus
 1. Find the Prometheus Service:
    ```bash
    kubectl get services -n monitoring
@@ -296,27 +306,29 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0` and `prometheus-server
 3. Access Prometheus at:
    [http://localhost:9090](http://localhost:9090)
 
----
-
-![image](https://github.com/user-attachments/assets/1a5044bb-a8e9-4909-86bd-c46b1750453d)
-
-### Step 3: Installing Grafana
-
-1. **Add the Grafana Repository**:
+### Grafana
+1. Add the Grafana Repository:
    ```bash
    helm repo add grafana https://grafana.github.io/helm-charts
    helm repo update
    ```
-
-2. **Install Grafana**:
+2. Install Grafana:
    ```bash
    helm install grafana grafana/grafana --namespace monitoring
    ```
-
-3. **Find the Admin Password**:
+3. Retrieve the Admin Password:
    ```bash
    kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
    ```
+4. Perform Port Forwarding to Access Grafana:
+   ```bash
+   kubectl port-forward -n monitoring svc/grafana 3000:80
+   ```
+5. Access Grafana at:
+   [http://localhost:3000](http://localhost:3000)
 
-4. **Access Grafana**:
-   Perform
+---
+
+## 7. Conclusion
+
+This lab was a comprehensive exercise in setting up monitoring for Kubernetes clusters using Prometheus and Grafana. It reinforced key concepts in Kubernetes resource management, cloud-native storage solutions, and troubleshooting techniques. Future enhancements could include automating the entire setup using Helm charts and scripts to streamline the process further.
