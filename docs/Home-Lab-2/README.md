@@ -84,6 +84,8 @@ eksctl create cluster --name eks-stav --region eu-west-1 --nodes 3 --node-type t
    ```bash
    curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
    ```
+   ![image](https://github.com/user-attachments/assets/bf1b92ca-2669-4e3f-8104-d6e12b61b514)
+
 
 2. **Add the Prometheus Community Repository**:
    ```bash
@@ -101,7 +103,7 @@ eksctl create cluster --name eks-stav --region eu-west-1 --nodes 3 --node-type t
    kubectl get pods -n monitoring
    ```
 
-![Prometheus Pods](https://github.com/user-attachments/assets/f37a378f-51ba-44d8-bcfa-95df7b633021)
+   ![Prometheus Pods](https://github.com/user-attachments/assets/f37a378f-51ba-44d8-bcfa-95df7b633021)
 
 ---
 
@@ -114,6 +116,8 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0`, may enter a **`Pendin
    ```bash
    kubectl get pvc -n monitoring
    ```
+   ![image](https://github.com/user-attachments/assets/13fc0ca3-a12e-4096-b18f-cf2fbbde3556)
+
 2. **Describe a Pending PVC**:
    ```bash
    kubectl describe pvc <pvc-name> -n monitoring
@@ -142,6 +146,7 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0`, may enter a **`Pendin
    ```bash
    kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-ebs-csi-driver
    ```
+   ![image](https://github.com/user-attachments/assets/d17d274a-fb35-42b1-9785-576612a33653)
 
 ---
 
@@ -232,7 +237,7 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0`, may enter a **`Pendin
    kubectl get pvc -n monitoring
    kubectl get pv
    ```
-![image](https://github.com/user-attachments/assets/460f6148-c7ae-4e80-8bf1-337dbd3b5cca)
+   ![image](https://github.com/user-attachments/assets/460f6148-c7ae-4e80-8bf1-337dbd3b5cca)
 
 ---
 
@@ -289,6 +294,7 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0`, may enter a **`Pendin
    ```bash
    kubectl get pods -n monitoring
    ```
+   ![image](https://github.com/user-attachments/assets/fad5c6de-bda3-4d68-a967-211b8820cbcc)
 
 ---
 
@@ -305,6 +311,9 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0`, may enter a **`Pendin
    ```
 3. Access Prometheus at:
    [http://localhost:9090](http://localhost:9090)
+
+   ![image](https://github.com/user-attachments/assets/d46637b9-580c-48b8-9c45-f97c5b15b324)
+
 
 ### Grafana
 1. Add the Grafana Repository:
