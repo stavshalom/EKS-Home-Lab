@@ -16,7 +16,8 @@
    - [Creating a StorageClass for the EBS CSI Driver](#creating-a-storageclass-for-the-ebs-csi-driver)
    - [Resolving Pending Pods](#resolving-pending-pods)
 6. [Accessing Prometheus and Grafana](#6-accessing-prometheus-and-grafana)
-7. [Conclusion](#7-conclusion)
+7. [Cleanup Gg All Resources in an EKS Cuide](#7-cleanup-gg-all-resources-in-an-eks-guide)
+8. [Conclusion](#8-conclusion)
 
 ---
 
@@ -337,7 +338,134 @@ Some Prometheus Pods, such as `prometheus-alertmanager-0`, may enter a **`Pendin
    [http://localhost:3000](http://localhost:3000)
 
 ---
+## 7. Cleanup Gg All Resources in an EKS Cuide
 
-## 7. Conclusion
+## Step 1: Deleting All Resources in Namespaces
+
+1. Delete all resources in all namespaces:
+   ```bash
+   kubectl delete all --all --all-namespaces
+   ```
+2. Delete ConfigMaps and Secrets in all namespaces:
+   ```bash
+   kubectl delete configmaps --all --all-namespaces
+   kubectl delete secrets --all --all-namespaces
+   ```
+
+---
+
+## Step 2: Deleting PersistentVolumeClaims and PersistentVolumes
+
+1. Delete all PVCs:
+   ```bash
+   kubectl delete pvc --all --all-namespaces
+   ```
+2. Delete all PVs:
+   ```bash
+   kubectl delete pv --all
+   ```
+
+---
+
+## Step 3: Deleting StorageClasses
+
+1. Delete all StorageClasses (if any exist):
+   ```bash
+   kubectl delete storageclass --all
+   ```
+
+---
+
+## Step 4: Deleting Custom Namespaces
+
+1. If you created custom namespaces, delete them:
+   ```bash
+   kubectl delete namespace <namespace-name>
+   ```
+2. To delete all custom namespaces:
+   ```bash
+   kubectl get namespaces | grep -v "kube-system\|kube-public\|default" | awk '{print $1}' | xargs kubectl delete namespace
+   ```
+
+---
+
+## Step 5: Deleting the AWS EBS CSI Driver
+
+1. Uninstall the AWS EBS CSI Driver:
+   ```bash
+   kubectl delete -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/ecr/?ref=release-1.38"
+   ```
+
+---
+
+## Step 6: Deleting Nodes and the EKS Cluster (Optional)
+
+### Deleting the Cluster
+
+1. If you used `eksctl` to create the cluster, delete it:
+   ```bash
+   eksctl delete cluster --name eks-stav
+   ```
+2. If the cluster was created manually (e.g., via CloudFormation), delete the stack:
+   ```bash
+   aws cloudformation delete-stack --stack-name <stack-name>
+   ```
+
+### Deleting Nodes (if not automatically removed)
+
+1. Identify the EC2 instances associated with the cluster:
+   ```bash
+   aws ec2 describe-instances --filters "Name=tag:eks:cluster-name,Values=<cluster-name>" --query "Reservations[].Instances[].InstanceId"
+   ```
+2. Terminate the instances:
+   ```bash
+   aws ec2 terminate-instances --instance-ids <instance-id-1> <instance-id-2>
+   ```
+
+---
+
+## Step 7: Final Cleanup
+
+1. Check for orphaned Load Balancers:
+   ```bash
+   aws elb describe-load-balancers --query "LoadBalancerDescriptions[].LoadBalancerName"
+   ```
+   Delete any orphaned Load Balancers:
+   ```bash
+   aws elb delete-load-balancer --load-balancer-name <load-balancer-name>
+   ```
+
+2. Delete orphaned Security Groups:
+   ```bash
+   aws ec2 delete-security-group --group-id <security-group-id>
+   ```
+
+3. Delete orphaned Volumes:
+   ```bash
+   aws ec2 delete-volume --volume-id <volume-id>
+   ```
+
+---
+
+## Step 8: Verifying Resource Deletion
+
+1. Verify no active resources exist in EKS:
+   ```bash
+   kubectl get all --all-namespaces
+   ```
+
+2. Confirm no clusters are present:
+   ```bash
+   eksctl get cluster
+   ```
+
+3. Use the AWS Management Console to ensure no active resources remain in EC2, S3, or other services.
+
+---
+
+By following these steps, you ensure that all resources associated with your EKS cluster are properly deleted, minimizing costs and avoiding orphaned resources in your AWS account.
+
+---
+## 8. Conclusion
 
 This lab was a comprehensive exercise in setting up monitoring for Kubernetes clusters using Prometheus and Grafana. It reinforced key concepts in Kubernetes resource management, cloud-native storage solutions, and troubleshooting techniques. Future enhancements could include automating the entire setup using Helm charts and scripts to streamline the process further.
